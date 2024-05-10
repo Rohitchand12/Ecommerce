@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const app = require("./app");
 
 const DB = process.env.DB_URI.replace('<password>',process.env.DB_PASSWORD);
-mongoose.connect(DB).then(()=>console.log("db connected successfully"))
+mongoose.connect(DB,{dbName:'Ecommerce_db'}).then(()=>console.log("db connected successfully"))
 
 
 const port = process.env.PORT;
