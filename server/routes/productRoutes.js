@@ -4,11 +4,14 @@ const productRouter = express.Router();
 
 //defining routes
 
-productRouter.route("/").get(productsController.getAllProducts);
+productRouter
+  .route("/")
+  .get(productsController.getAllProducts)
+  .post(productsController.postProduct);
+  
 productRouter
   .route("/:id")
   .get(productsController.getProduct)
-  .post(productsController.postProduct)
   .patch(productsController.updateProduct)
   .delete(productsController.deleteProduct);
 

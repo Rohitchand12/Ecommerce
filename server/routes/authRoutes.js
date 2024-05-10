@@ -4,8 +4,8 @@ const authRouter = express.Router();
 
 //defining routes
 
-authRouter.route('/signup').get(authController.signup);
-authRouter.route('/login').get(authController.login);
-authRouter.route('/logout').get(authController.logout);
+authRouter.route('/signup').post(authController.signup);
+authRouter.route('/login').post(authController.login);
+authRouter.route('/logout').post(authController.logout);
 
 module.exports = authRouter;
