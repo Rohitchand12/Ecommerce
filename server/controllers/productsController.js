@@ -1,7 +1,12 @@
-exports.getAllProducts = (req,res)=>{
+const Product = require("../models/product.model")
+
+exports.getAllProducts = async(req,res)=>{
+    const products = await Product.find().populate('category');
     res.status(200).json({
         success:true,
-        message:'all products route'
+        data:{
+            products
+        }
     })
 }
 exports.getProduct = (req,res)=>{
@@ -19,10 +24,13 @@ exports.updateProduct = (req,res)=>{
         message:'update product route'
     })
 }
-exports.postProduct = (req,res)=>{
+exports.postProduct = async(req,res)=>{
+    const newProduct = await Product.create(req.body);
     res.status(200).json({
         success:true,
-        message:'post product route'
+        data:{
+            product: newProduct
+        }
     })
 }
 exports.deleteProduct = (req,res)=>{
