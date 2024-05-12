@@ -1,7 +1,7 @@
 const Product = require("../models/product.model")
 
 exports.getAllProducts = async(req,res)=>{
-    const products = await Product.find().populate('category');
+    const products = await Product.find().populate('reviews');
     res.status(200).json({
         success:true,
         data:{
