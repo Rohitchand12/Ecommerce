@@ -12,6 +12,11 @@ const productSchema = new mongoose.Schema(
       required: [true, "Please add product description"],
       trim: true,
     },
+    seller:{
+      type : String,
+      required:[true,'Product must have a seller'],
+      trim:true
+    },
     highlights: [
       {
         type: String,
