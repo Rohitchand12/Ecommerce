@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
+const asyncHandler = require("../utils/asyncHandler");
 
-exports.signup = async(req, res) => {
+exports.signup = asyncHandler(async(req, res) => {
   const newUser = await User.create(req.body);
   res.status(200).json({
     success: true,
@@ -8,16 +9,16 @@ exports.signup = async(req, res) => {
       user:newUser
     }
   });
-};
-exports.login = (req, res) => {
+});
+exports.login = asyncHandler(async(req, res) => {
   res.status(200).json({
     success: true,
     message: "this is login route",
   });
-};
-exports.logout = (req, res) => {
+});
+exports.logout = asyncHandler(async(req, res) => {
   res.status(200).json({
     success: true,
     message: "this is logout route",
   });
-};
+});

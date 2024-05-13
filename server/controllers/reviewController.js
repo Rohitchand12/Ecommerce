@@ -1,6 +1,7 @@
 const Review = require("../models/review.model")
+const asyncHandler = require("../utils/asyncHandler")
 
-exports.get_all_reviews = async(req,res)=>{
+exports.get_all_reviews = asyncHandler(async(req,res)=>{
     const reviews = await Review.find();
     res.status(200).json({
         success:true,
@@ -8,9 +9,9 @@ exports.get_all_reviews = async(req,res)=>{
             reviews
         }
     })
-}
+})
 
-exports.create_review = async(req,res)=>{
+exports.create_review = asyncHandler(async(req,res)=>{
     const newReview = await Review.create(req.body);
     res.status(200).json({
         success:true,
@@ -18,4 +19,4 @@ exports.create_review = async(req,res)=>{
             newReview
         }
     })
-}
+})
