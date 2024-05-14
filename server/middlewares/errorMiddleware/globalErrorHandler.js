@@ -43,11 +43,24 @@ const handleDuplicateFeildsDb = (err) => {
   return new AppError(message, 400);
 };
 
+//handling Schema validation error
 const handleValidationError=(err)=>{
     const errors = Object.values(err.errors).map(el => el.message)
     const message = `Invalid input data . ${errors.join('. ')}`
     return new AppError(message,400);
 }
+
+//handling JWT invaldation error
+const handleJWTError = ()=>{
+  const message = "Invalid token , please login again"
+  return new AppError(message,401);
+}
+
+//handling JWT expiration error
+const handleJWTExpired = ()=>{
+  return new AppError('Session has expired , please login again',401)
+}
+
 //error handling middleware
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -76,6 +89,13 @@ module.exports = (err, req, res, next) => {
 
     // if user enters data that breaches the validation rules of schema
     if(err.name === "ValidationError") error = handleValidationError(error);
+
+
+    //if JWT is invalid
+    if(err.name === 'JsonWebTokenError') error = handleJWTError();
+
+    //if JWT expired
+    if(err.name === 'TokenExpiredError') error = handleJWTExpired();
 
     sendProdError(error, res);
   }
