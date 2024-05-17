@@ -2,16 +2,46 @@ const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("../utils/asyncHandler");
 const AppError = require("../utils/appError");
-const sendEmail = require('../utils/sendMail');
+const sendEmail = require("../utils/sendMail");
+const crypto = require("crypto");
 
 const generateToken = (payload) => {
-  const token = jwt.sign(payload,process.env.JWT_SECRET,{
-    expiresIn:process.env.JWT_EXPIRES_IN
-  })
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
   return token;
-}
+};
 
+const sendJWTResponse = (user, statusCode, res) => {
+  const payload = {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+  };
+  const token = generateToken(payload);
 
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly:true
+  };
+
+  if(process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  user.password = undefined; //so that password is not visible in response , note we're not saving user 
+
+  res.cookie("jwt", token, cookieOptions);
+  res.status(statusCode).json({
+    success: true,
+    token,
+    data:{
+      user
+    }
+  });
+};
+
+//SIGNUP CONTROLLER
 exports.signup = asyncHandler(async (req, res) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -19,56 +49,35 @@ exports.signup = asyncHandler(async (req, res) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     image: req.body.image,
-    passwordChangedAt :req.body.passwordChangedAt // remove this later
+    passwordChangedAt: req.body.passwordChangedAt, // remove this later
   });
-  const payload = {
-    id: newUser._id,
-    name: newUser.name,
-    email: newUser.email,
-  };
-  const token = generateToken(payload)
 
-  res.status(200).json({
-    success: true,
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+
+  sendJWTResponse(newUser, 200, res);
 });
 
-exports.login = asyncHandler(async (req, res , next) => {
-
-  const {email , password} = req.body
+//lOGIN CONTROLLER
+exports.login = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
 
   //check if email exists in req.body
-  if(!email || !password){
-    return next(new AppError('Please provide an email and password',400))
+  if (!email || !password) {
+    return next(new AppError("Please provide an email and password", 400));
   }
 
   // check if user exits and match passwords
-  const user = await User.findOne({email}).select('+password') // selected password with + explicitly bcoz its by default not selected as per schema 
+  const user = await User.findOne({ email }).select("+password"); // selected password with + explicitly bcoz its by default not selected as per schema
 
-  if(!user || !(await user.validatePassword(password,user.password))){
-    return next(new AppError('Invalid email or password',401));
+  if (!user || !(await user.validatePassword(password, user.password))) {
+    return next(new AppError("Invalid email or password", 401));
   }
 
   //if ok , generate and send token to client
 
-  const payload = {
-    id: user._id,
-    name: user.name,
-    email: user.email,
-  };
-  const token = generateToken(payload)
-
-
-  res.status(200).json({
-    success: true,
-    token,
-    message: "this is login route",
-  });
+  sendJWTResponse(user, 200, res);
 });
+
+//LOGOUT CONTROLLER
 exports.logout = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
@@ -76,20 +85,72 @@ exports.logout = asyncHandler(async (req, res) => {
   });
 });
 
-
-exports.forgotPassword = asyncHandler(async(req,res,next) => {
+// FORGOT PASSWORD CONTROLLER
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
   //1) check whether user with email provided exists or not
-  const user = await User.findOne({email : req.body.email})
-  if(!user){
-    return next(new AppError('No user found with this email'),404);
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError("No user found with this email"), 404);
   }
 
   //2)create a random reset token
   const resetToken = user.createPasswordResetToken();
-  await user.save({validateBeforeSave:false});
+  await user.save({ validateBeforeSave: false });
 
-})
+  //3)send token in email
+  const resetURL = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/auth/resetPassword/${resetToken}`;
 
-exports.resetPassword = (req,res,res) => {
+  const message = `Forgot your password ? No worries , click on the link to reset password ${resetURL}.If not , please ignore this email`;
 
-}
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Your password reset token (valid 10 min)",
+      message,
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new AppError("Could not send the email , try again later!"),
+      500
+    );
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset token sent to email",
+  });
+});
+
+//RESET PASSWORD CONTROLLER
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  //  1)check the reset token sent by user
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  // 2) if the token is not expired and there is user , then set new password
+  if (!user) {
+    return next(new AppError("Token is invalid or has expired "), 400);
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  //3) update changePasswordAt property in user model
+  // update changePasswordAt is dont in the preSave middleware in user model
+
+  //4) log the user in and send jwt
+  sendJWTResponse(user, 200, res);
+});
