@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
@@ -57,7 +57,8 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-//Document middlewares
+//DOCUMENT MIDDLEWARES *************************************************
+
 userSchema.pre("save", async function (next) {
   //check is password is not modified
   if (!this.isModified("password")) return next();
@@ -70,8 +71,17 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-//Instance methods
+userSchema.pre('save',function(next){
+  if(!this.isModified('password') || this.isNew) return next();
+  
+  this.passwordChangedAt = Date.now()-1000 // -1000 bcoz JWT creation might take time , so managed it here
+  //otherwise it might cause problem in protect middleware where we checked if password was change after issuing jwt 
+  next();
+})
 
+//INSTANCE METHODS ******************************************************
+
+//validate encrypted passwords on login
 userSchema.methods.validatePassword = async function (
   candidatePassword,
   userPassword
@@ -79,6 +89,8 @@ userSchema.methods.validatePassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
+
+//check if password is changed
 userSchema.methods.isPasswordChanged = function (jwtTimestamp) {
   if (this.passwordChangedAt) {
     //JwtTimestamp is in seconds , so converting passwordChanged time to seconds
@@ -91,21 +103,21 @@ userSchema.methods.isPasswordChanged = function (jwtTimestamp) {
     //Password Changed after jwt was issued will result to true i.e password is changed
     //Password changed before jwt was issued is fine so it will return false
   }
-
-  userSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto.randomBytes(32).string("hex");
-
-    this.passwordResetToken = crypto // encrypt using crypto
-      .hash("sha256")
-      .update(resetToken)
-      .digest("hex");
-
-    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-
-    return resetToken;
-  };
-
   return false;
+};
+
+//create reset password token for resetting password
+userSchema.methods.createPasswordResetToken = function () {
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto // encrypt using crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 const User = mongoose.model("User", userSchema);
