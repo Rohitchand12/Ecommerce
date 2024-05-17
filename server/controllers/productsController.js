@@ -1,11 +1,20 @@
 const Product = require("../models/product.model");
 const asyncHandler = require("../utils/asyncHandler");
+const APIFeatures = require("../utils/apiFeatures");
 
 exports.getAllProducts = asyncHandler(async (req, res, next) => {
   // more about async handler in ../utils/asyncHandler.js
-  const products = await Product.find().populate("reviews");
+  
+  const features = new APIFeatures(Product.find().populate('reviews'), req.query)
+    .filter()
+    .sort()
+    .limit()
+    .paginate();
+  const products = await features.query
+
   res.status(200).json({
     success: true,
+    results: products.length,
     data: {
       products,
     },
