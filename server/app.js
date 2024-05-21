@@ -1,26 +1,28 @@
-const express = require("express");
-const authRouter = require("./routes/authRoutes");
-const cartRouter = require("./routes/cartRoutes");
-const productRouter = require("./routes/productRoutes");
-const orderRouter = require("./routes/orderRoutes");
-const reviewRouter = require("./routes/reviewRoute");
-const globalErrorHandler = require('./middlewares/errorMiddleware/globalErrorHandler');
-const AppError = require("./utils/appError");
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize')
-const hpp = require('hpp');
+import express from "express";
+import authRouter from "./routes/authRoutes.js";
+import cartRouter from "./routes/cartRoutes.js";
+import productRouter from "./routes/productRoutes.js";
+import orderRouter from "./routes/orderRoutes.js";
+import reviewRouter from "./routes/reviewRoute.js";
+import globalErrorHandler from './middlewares/errorMiddleware/globalErrorHandler.js';
+import AppError from "./utils/appError.js";
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
+import cookieParser from "cookie-parser";
 
 //instantiating app
 const app = express();
+app.use(express.static('/public'));
 
 
 //GLOBAL MIDDLEWARES
 
 // app.use(express.json({limit:'10kb'})) can be used to limit body data
+app.use(cookieParser());
 app.use(express.json()); //parsing data from body
 app.use(helmet()) // security http headers
-
 
 const limiter = rateLimit({
     max:100, //100 requests per 15 minutes
@@ -61,4 +63,4 @@ app.all('*',(req,res,next)=>{
 
 app.use(globalErrorHandler);
 
-module.exports = app;
+export default app;
