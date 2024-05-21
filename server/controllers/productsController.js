@@ -1,16 +1,19 @@
-const Product = require("../models/product.model");
-const asyncHandler = require("../utils/asyncHandler");
-const APIFeatures = require("../utils/apiFeatures");
+import Product from "../models/product.model.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import APIFeatures from "../utils/apiFeatures.js";
+import AppError from "../utils/appError.js";
+import { uploadMultipleOnCloudinary } from "../utils/cloudinary.js";
+import { uploadSingleOnCloudinary } from "../utils/cloudinary.js";
 
-exports.getAllProducts = asyncHandler(async (req, res, next) => {
+export const getAllProducts = asyncHandler(async (req, res, next) => {
   // more about async handler in ../utils/asyncHandler.js
-  
-  const features = new APIFeatures(Product.find().populate('reviews'), req.query)
+
+  const features = new APIFeatures(Product.find(), req.query)
     .filter()
     .sort()
     .limit()
     .paginate();
-  const products = await features.query
+  const products = await features.query.populate("reviews");
 
   res.status(200).json({
     success: true,
@@ -20,23 +23,66 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
     },
   });
 });
-exports.getProduct = asyncHandler((req, res, next) => {
+
+export const getProduct = asyncHandler(async(req, res, next) => {
+  const product = await Product.find({_id:req.params.productId})
   res.status(200).json({
     success: true,
-    message: "get product route",
+    product
   });
 });
 
-//ADMIN ROUTES
+export const updateProduct = asyncHandler(async(req, res, next) => {
 
-exports.updateProduct = asyncHandler((req, res, next) => {
+  const updatedProduct = await Product.findByIdAndUpdate(req.params.productId,req.body,{new:true});  
   res.status(200).json({
     success: true,
-    message: "update product route",
+    updatedProduct
   });
 });
-exports.postProduct = asyncHandler(async (req, res, next) => {
-  const newProduct = await Product.create(req.body);
+
+export const postProduct = asyncHandler(async (req, res, next) => {
+  let allImagePaths;
+
+  //taking out path of files from req.files
+  allImagePaths = Object.keys(req.files).flatMap((key) =>
+    req.files[key].map((file) => file.path)
+  );
+  console.log(req.files);
+
+  // taking out coverImage name
+  const coverImageName = req.files?.coverImage[0]?.filename.split(".")[0];
+  //upload multiple files to cloudinary
+  const uploads = await uploadMultipleOnCloudinary(allImagePaths);
+
+  // comparing coverimage name to filename and getting coverImage URL
+  const coverImageURL = uploads.find(
+    (upload) => upload.original_filename === coverImageName
+  ).url;
+
+  // getting other images URL
+  const imagesURL = uploads
+    .filter((upload) => upload.original_filename !== coverImageName)
+    .map((upload) => ({ url: upload.url }));
+
+  const productData = {
+    title: req.body.title,
+    description: req.body.description,
+    original_price: req.body.originalPrice,
+    sale_price: req.body.salePrice || "",
+    seller: req.body.seller,
+    brand: req.body.brand,
+    category: req.body.category,
+    quantity: req.body.quantity,
+    coverImage: coverImageURL,
+    images: imagesURL,
+    highlights: req.body.highlights || [], //[""]
+    specifications: req.body.specifications || [], //[{title: , description:}]
+    color: req.body.color || "",
+  };
+
+  const newProduct = await Product.create(productData);
+
   res.status(200).json({
     success: true,
     data: {
@@ -44,9 +90,39 @@ exports.postProduct = asyncHandler(async (req, res, next) => {
     },
   });
 });
-exports.deleteProduct = asyncHandler((req, res, next) => {
+export const deleteProduct = asyncHandler(async(req, res, next) => {
+  await Product.findByIdAndDelete(req.params.productId);
   res.status(200).json({
     success: true,
-    message: "delete product route",
+    message: "Product deleted successfully!",
   });
 });
+
+/*
+  req.files = {
+    avatar :[
+      {
+        path: ....
+      }
+    ]
+  }
+
+
+  allImagesPath after iterating over req.files and flattening the array:
+  allImagesPath = ["path1","path2","path3"...];
+
+
+  passed this array of paths to cloudinary upload fucnction;
+
+
+  uploads = [
+    {
+      original_filename:"somename"
+
+    }
+  ]
+
+
+
+
+*/
