@@ -1,6 +1,6 @@
-const AppError = require("../../utils/appError");
+import AppError from "../../utils/appError.js";
 
-exports.restrictTo = (...roles) => {
+export function restrictTo(...roles) {
   return (req, res, next) => {
     // this is a closure ,so it will have access to roles
     //roles = ['admin','user'] whatever is passed
@@ -12,7 +12,7 @@ exports.restrictTo = (...roles) => {
     }
     next();
   };
-};
+}
 
 //  in above if statement , we write req.user.role bcoz we use restrictTo middleware after protect
 // and in protect ,at last wrote req.user = currentUser , hence user is available in req

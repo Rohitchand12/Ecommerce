@@ -1,4 +1,4 @@
-const AppError = require("../../utils/appError");
+import AppError from "../../utils/appError.js";
 
 //more descriptive error for development environment
 const sendDevError = (err, res) => {
@@ -62,7 +62,7 @@ const handleJWTExpired = ()=>{
 }
 
 //error handling middleware
-module.exports = (err, req, res, next) => {
+export default (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 

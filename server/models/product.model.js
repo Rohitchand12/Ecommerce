@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const productSchema = new mongoose.Schema(
+const productSchema = new Schema(
   {
     title: {
       type: String,
@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema(
     highlights: [
       {
         type: String,
-        required: [true, "proceed to add a highlight"],
+        // required: [true, "proceed to add a highlight"],
       },
     ],
     specifications: [
@@ -91,5 +91,5 @@ productSchema.virtual("reviews",{
     localField:'_id'
 });
 
-const Product = mongoose.model("Product", productSchema);
-module.exports = Product;
+const Product = model("Product", productSchema);
+export default Product;

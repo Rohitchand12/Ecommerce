@@ -1,13 +1,14 @@
-const express = require("express");
-const authController = require('../controllers/authController');
+import express from "express";
+import { signup, login, logout, forgotPassword, resetPassword } from '../controllers/authController.js';
+import upload from "../middlewares/multer/multer.js";
+import { protect } from "../middlewares/authMiddleware/protect.js";
 const authRouter = express.Router();
-
 //defining routes
 
-authRouter.route('/signup').post(authController.signup);
-authRouter.route('/login').post(authController.login);
-authRouter.route('/logout').post(authController.logout);
-authRouter.route('/forgotPassword').post(authController.forgotPassword);
-authRouter.route('/resetPassword/:token').post(authController.resetPassword);
+authRouter.route('/signup').post(upload.single("avatar"),signup);
+authRouter.route('/login').post(login);
+authRouter.route('/logout').post(protect,logout);
+authRouter.route('/forgotPassword').post(forgotPassword);
+authRouter.route('/resetPassword/:token').post(resetPassword);
 
-module.exports = authRouter;
+export default authRouter;

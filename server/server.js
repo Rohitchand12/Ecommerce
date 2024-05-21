@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import app from "./app.js";
 
 process.on('uncaughtException',(err)=>{
   console.log(err.name , err.message);
@@ -7,13 +8,9 @@ process.on('uncaughtException',(err)=>{
   process.exit(1); 
 })
 
-
 dotenv.config({ path: "./.env" });
-const app = require("./app");
-
 const DB = process.env.DB_URI.replace("<password>", process.env.DB_PASSWORD);
-mongoose
-  .connect(DB, { dbName: "Ecommerce_db" })
+mongoose.connect(DB, { dbName: "Ecommerce_db" })
   .then(() => console.log("db connected successfully"))
 
 

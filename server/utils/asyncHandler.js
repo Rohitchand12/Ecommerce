@@ -4,7 +4,7 @@ const asyncHandler = (asyncFn) => {
   };
 };
 
-module.exports = asyncHandler
+export default asyncHandler
 
 /*
     -> async handler is a HIGHER ORDER function .

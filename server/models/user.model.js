@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
+import { Schema, model } from "mongoose";
+import validator from "validator";
+import { randomBytes, createHash } from "crypto";
+import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email"],
     },
-    image: {
+    avatar: {
       type: String,
     },
     role: {
@@ -109,9 +109,8 @@ userSchema.methods.isPasswordChanged = function (jwtTimestamp) {
 //create reset password token for resetting password
 userSchema.methods.createPasswordResetToken = function () {
 
-  const resetToken = crypto.randomBytes(32).toString("hex");
-  this.passwordResetToken = crypto // encrypt using crypto
-    .createHash("sha256")
+  const resetToken = randomBytes(32).toString("hex");
+  this.passwordResetToken = createHash("sha256")
     .update(resetToken)
     .digest("hex");
 
@@ -120,5 +119,5 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const User = model("User", userSchema);
+export default User;

@@ -1,10 +1,10 @@
-const AppError = require("../../utils/appError");
-const jwt = require("jsonwebtoken");
-const User = require("../../models/user.model");
-const { promisify } = require("util");
-const asyncHandler = require("../../utils/asyncHandler");
+import AppError from "../../utils/appError.js";
+import jwt from "jsonwebtoken";
+import User from "../../models/user.model.js";
+import { promisify } from "util";
+import asyncHandler from "../../utils/asyncHandler.js";
 
-exports.protect = asyncHandler(async (req, res, next) => {
+export const protect = asyncHandler(async (req, res, next) => {
   // 1) get the token
   let token;
   if (

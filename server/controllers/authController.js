@@ -1,9 +1,10 @@
-const User = require("../models/user.model");
-const jwt = require("jsonwebtoken");
-const asyncHandler = require("../utils/asyncHandler");
-const AppError = require("../utils/appError");
-const sendEmail = require("../utils/sendMail");
-const crypto = require("crypto");
+import User from "../models/user.model.js";
+import jwt from "jsonwebtoken";
+import asyncHandler from "../utils/asyncHandler.js";
+import AppError from "../utils/appError.js";
+import sendEmail from "../utils/sendMail.js";
+import { createHash } from "crypto";
+import {uploadSingleOnCloudinary} from "../utils/cloudinary.js";
 
 const generateToken = (payload) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -24,40 +25,57 @@ const sendJWTResponse = (user, statusCode, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
-    httpOnly:true
+    httpOnly: true,
+    // secure:true
   };
 
-  if(process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
-  user.password = undefined; //so that password is not visible in response , note we're not saving user 
+  user.password = undefined; //so that password is not visible in response , note we're not saving user
 
   res.cookie("jwt", token, cookieOptions);
   res.status(statusCode).json({
     success: true,
     token,
-    data:{
-      user
-    }
+    data: {
+      user,
+    },
   });
 };
 
-//SIGNUP CONTROLLER
-exports.signup = asyncHandler(async (req, res) => {
-  const newUser = await User.create({
+export const signup = asyncHandler(async (req, res, next) => {
+  const { name, email, password, passwordConfirm } = req.body;
+  const feilds = [name, email, password, passwordConfirm];
+
+  //check if any feild is empty
+  if (feilds.some((feild) => feild?.trim() === "")) {
+    return next(new AppError("All feilds are required"));
+  }
+
+  // check if user has an account
+  const userExists = await User.findOne({ email });
+
+  if (userExists) {
+    return next(new AppError("User already exists", 400));
+  }
+
+  let avatar;
+  if (req.file) {
+    avatar = await uploadSingleOnCloudinary(req.file.path);
+  }
+
+  const newUser = await create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    image: req.body.image,
-    passwordChangedAt: req.body.passwordChangedAt, // remove this later
+    avatar: avatar?.url || "",
   });
-
 
   sendJWTResponse(newUser, 200, res);
 });
 
-//lOGIN CONTROLLER
-exports.login = asyncHandler(async (req, res, next) => {
+export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   //check if email exists in req.body
@@ -77,16 +95,19 @@ exports.login = asyncHandler(async (req, res, next) => {
   sendJWTResponse(user, 200, res);
 });
 
-//LOGOUT CONTROLLER
-exports.logout = asyncHandler(async (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "this is logout route",
-  });
+export const logout = asyncHandler(async (req, res) => {
+  res
+    .status(200)
+    .clearCookie("jwt", {
+      httpOnly: true,
+    })
+    .json({
+      success: true,
+      message: "user logged out successfully",
+    });
 });
 
-// FORGOT PASSWORD CONTROLLER
-exports.forgotPassword = asyncHandler(async (req, res, next) => {
+export const forgotPassword = asyncHandler(async (req, res, next) => {
   //1) check whether user with email provided exists or not
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
@@ -127,11 +148,9 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   });
 });
 
-//RESET PASSWORD CONTROLLER
-exports.resetPassword = asyncHandler(async (req, res, next) => {
+export const resetPassword = asyncHandler(async (req, res, next) => {
   //  1)check the reset token sent by user
-  const hashedToken = crypto
-    .createHash("sha256")
+  const hashedToken = createHash("sha256")
     .update(req.params.token)
     .digest("hex");
   const user = await User.findOne({

@@ -10,7 +10,7 @@ class AppError extends Error {
   }
 }
 
-module.exports = AppError;
+export default AppError;
 
 /*
   -> This is an extension of the Error class that we will use to generate errors.
