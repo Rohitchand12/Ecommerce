@@ -1,20 +1,33 @@
-const express = require("express");
-const productsController = require("../controllers/productsController");
-const productRouter = express.Router();
-const {protect} = require('../middlewares/authMiddleware/protect');
-const {restrictTo} = require('../middlewares/authMiddleware/restrictTo');
+import { Router } from "express";
+import { getAllProducts, postProduct, getProduct, updateProduct, deleteProduct } from "../controllers/productsController.js";
+const productRouter = Router();
+import { protect } from "../middlewares/authMiddleware/protect.js";
+import { restrictTo } from "../middlewares/authMiddleware/restrictTo.js";
+import upload from "../middlewares/multer/multer.js";
 
 //defining routes
 
+// productRouter
+//   .route("/upload")
+//   .post(upload.single('fileUpload'), productsController.uploadFile);
 productRouter
   .route("/")
-  .get(productsController.getAllProducts)
-  .post(protect,restrictTo('admin'),productsController.postProduct);
-  
-productRouter
-  .route("/:id")
-  .get(productsController.getProduct)
-  .patch(protect,restrictTo('admin'),productsController.updateProduct)
-  .delete(protect,restrictTo('admin'),productsController.deleteProduct);
+  .get(getAllProducts)
+  .post(protect, restrictTo("admin"),upload.fields([
+    {
+      name:"coverImage",
+      maxCount:1
+    },
+    {
+      name:"productImages",
+      maxCount:8
+    }
+  ]), postProduct);
 
-module.exports = productRouter;
+productRouter
+  .route("/:productId")
+  .get(getProduct)
+  .patch(protect, restrictTo("admin"), updateProduct)
+  .delete(protect, restrictTo("admin"), deleteProduct);
+
+export default productRouter;
