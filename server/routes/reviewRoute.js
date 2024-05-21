@@ -1,10 +1,12 @@
-const express = require("express");
-const routeController = require("../controllers/reviewController");
-const reviewRouter = express.Router();
+import { Router } from "express";
+import { get_all_reviews, create_review , update_review, delete_review } from "../controllers/reviewController.js";
+import {protect} from "../middlewares/authMiddleware/protect.js"
+const reviewRouter = Router();
 
 reviewRouter
   .route("/")
-  .get(routeController.get_all_reviews)
-  .post(routeController.create_review);
+  .get(get_all_reviews)
 
-module.exports = reviewRouter;
+reviewRouter.route("/:productId").post(protect,create_review);
+reviewRouter.route("/:reviewId").patch(protect,update_review).delete(protect,delete_review);
+export default reviewRouter;
