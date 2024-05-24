@@ -4,6 +4,9 @@ import cartRouter from "./routes/cartRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
 import reviewRouter from "./routes/reviewRoute.js";
+import shipRouter from "./routes/shipping.Routes.js";
+import paymentRouter from "./routes/payment.router.js";
+import categoryRouter from "./routes/categoryRoutes.js";
 import globalErrorHandler from './middlewares/errorMiddleware/globalErrorHandler.js';
 import AppError from "./utils/appError.js";
 import rateLimit from 'express-rate-limit';
@@ -11,10 +14,20 @@ import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 import cookieParser from "cookie-parser";
+import path from "path"
+import cors from "cors";
+import { fileURLToPath } from 'url';
+
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
+
 
 //instantiating app
 const app = express();
+app.use(cors());
 app.use(express.static('/public'));
+app.set("view engine","ejs");
 
 
 //GLOBAL MIDDLEWARES
@@ -51,7 +64,14 @@ app.use("/api/v1/products", productRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/reviews", reviewRouter);
-
+app.use("/api/v1/shipments",shipRouter);
+app.use("/api/v1/payments",paymentRouter);
+app.use("/api/v1/categories",categoryRouter);
+app.get("/",(req,res)=>{
+    res.render(path.join(__dirname,"views/resetPassword.ejs"),{
+        name:"Rohit Chand"
+    });
+})
 
 // handling random routes error
 
