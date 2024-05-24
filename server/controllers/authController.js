@@ -5,6 +5,7 @@ import AppError from "../utils/appError.js";
 import sendEmail from "../utils/sendMail.js";
 import { createHash } from "crypto";
 import {uploadSingleOnCloudinary} from "../utils/cloudinary.js";
+import { Email } from "../utils/sendMail.js";
 
 const generateToken = (payload) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -29,7 +30,7 @@ const sendJWTResponse = (user, statusCode, res) => {
     // secure:true
   };
 
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  if (process.env.NODE_ENV === "production ") cookieOptions.secure = true;
 
   user.password = undefined; //so that password is not visible in response , note we're not saving user
 
@@ -64,13 +65,15 @@ export const signup = asyncHandler(async (req, res, next) => {
     avatar = await uploadSingleOnCloudinary(req.file.path);
   }
 
-  const newUser = await create({
+  const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     avatar: avatar?.url || "",
   });
+  const url = "https://github.com/Rohitchand12/Ecommerce/tree/main/server/controllers";
+  await new Email(newUser,url).sendWelcome();
 
   sendJWTResponse(newUser, 200, res);
 });
@@ -126,11 +129,13 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
   const message = `Forgot your password ? No worries , click on the link to reset password ${resetURL}.If not , please ignore this email`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: "Your password reset token (valid 10 min)",
-      message,
-    });
+    const url = "#";
+    await new Email(user,url).sendResetPasswordLink();
+    // await sendEmail({
+    //   email: user.email,
+    //   subject: "Your password reset token (valid 10 min)",
+    //   message,
+    // });
   } catch (err) {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
