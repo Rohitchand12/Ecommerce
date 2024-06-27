@@ -1,21 +1,23 @@
 import { Schema, model } from "mongoose";
+import Review from "../models/review.model.js";
+import AppError from "../utils/appError.js";
 
 const productSchema = new Schema(
   {
     title: {
       type: String,
-      required: [true, "Product title is required"],
+      // required: [true, "Product title is required"],
       trim: true,
     },
     description: {
       type: String,
-      required: [true, "Please add product description"],
+      // required: [true, "Please add product description"],
       trim: true,
     },
-    seller:{
-      type : String,
-      required:[true,'Product must have a seller'],
-      trim:true
+    seller: {
+      type: String,
+      // required: [true, "Product must have a seller"],
+      trim: true,
     },
     highlights: [
       {
@@ -27,41 +29,41 @@ const productSchema = new Schema(
       {
         title: {
           type: String,
-          required: [true, "specification title is required"],
+          // required: [true, "specification title is required"],
         },
         description: {
           type: String,
-          required: [true, "specification description is required"],
+          // required: [true, "specification description is required"],
         },
       },
     ],
     original_price: {
       type: Number,
-      required: [true, "original Price is required"],
+      // required: [true, "original Price is required"],
     },
     sale_price: {
       type: Number,
     },
     coverImage: {
       type: String,
-      required: [true, "cover image of product is required"],
+      // required: [true, "cover image of product is required"],
     },
     images: [
       {
         url: {
           type: String,
-          required: [true, "images url required"],
+          // required: [true, "images url required"],
         },
       },
     ],
     brand: {
       type: String,
-      required: [true, "Brand is required"],
+      // required: [true, "Brand is required"],
       trim: true,
     },
     category: {
       type: String,
-      required: [true, "Category is required"],
+      // required: [true, "Category is required"],
     },
     color: {
       type: String,
@@ -77,7 +79,7 @@ const productSchema = new Schema(
     },
     quantity: {
       type: Number,
-      required: [true, "quantity is required"],
+      // required: [true, "quantity is required"],
     },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
@@ -85,10 +87,17 @@ const productSchema = new Schema(
 
 //virtual populate
 
-productSchema.virtual("reviews",{
-    ref:'Review',
-    foreignField:'product',
-    localField:'_id'
+productSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "product",
+  localField: "_id",
+});
+
+productSchema.post("findOneAndDelete", async function (doc, next) {
+  if (doc) {
+    await Review.deleteMany({ product: doc._id });
+  }
+  next();
 });
 
 const Product = model("Product", productSchema);
