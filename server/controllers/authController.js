@@ -178,3 +178,13 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   //4) log the user in and send jwt
   sendJWTResponse(user, 200, res);
 });
+
+export const getProfile = asyncHandler(async(req,res) => {
+  const user  = req.user;
+  res.status(200).json({
+    success:true,
+    data:{
+      user
+    }
+  })
+})
