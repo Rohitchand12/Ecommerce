@@ -5,6 +5,7 @@ import { promisify } from "util";
 import asyncHandler from "../../utils/asyncHandler.js";
 
 export const protect = asyncHandler(async (req, res, next) => {
+  console.log(req.cookies);
   // 1) get the token
   let token;
   if (
@@ -12,6 +13,9 @@ export const protect = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1]; // its ['Bearer', 'Token']
+  }else if(req.cookies && req.cookies.jwt ){
+    console.log(req.cookies);
+    token = req.cookies.jwt;
   }
   if (!token) {
     return next(
