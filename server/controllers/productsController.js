@@ -24,58 +24,182 @@ export const getAllProducts = asyncHandler(async (req, res, next) => {
   });
 });
 
-export const getProduct = asyncHandler(async(req, res, next) => {
-  const product = await Product.find({_id:req.params.productId})
+export const getHomePage = asyncHandler(async (req, res) => {
+  const homePage = await Product.aggregate([
+    {
+      $facet: {
+        topOffers: [
+          {
+            $addFields: {
+              discount: { $subtract: ["$original_price", "$sale_price"] },
+            },
+          },
+          {
+            $sort: { discount: -1 },
+          },
+          {
+            $limit: 4,
+          },
+          {
+            $project: {
+              coverImage: 1,
+              original_price: 1,
+              sale_price: 1,
+              title: 1,
+            },
+          },
+        ],
+        categories: [
+          {
+            $group: {
+              _id: "$category",
+              image: { $first: "$coverImage" },
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $sort: { count: -1 },
+          },
+          {
+            $limit: 10,
+          },
+          {
+            $project: {
+              category: "$_id",
+              count: 1,
+              image: 1,
+            },
+          },
+        ],
+        products: [
+          {
+            $match: { quantity: { $gt: 0 } },
+          },
+          {
+            $sample: { size:8 },
+          },
+          {
+            $limit: 8,
+          },
+          {
+            $project: {
+              title: 1,
+              original_price: 1,
+              sale_price: 1,
+              coverImage: 1,
+            },
+          },
+        ],
+        randomImages:[
+          {
+            $match:{quantity:{$gt:0}}
+          },
+          {
+            $sample:{size:8}
+          },
+          {
+            $project:{
+              coverImage:1
+            }
+          }
+        ]
+      },
+    },
+  ]);
+  res.status(200).json({
+    success:true,
+    data:{
+      homePage
+    }
+  })
+});
+
+
+export const getCategories = asyncHandler(async(req,res)=>{
+  const categories = await Product.aggregate([
+    {
+      $group:{
+        _id:"$category",
+        count:{$sum : 1},
+        image : {$first : "$coverImage"}
+      }
+    },
+    {
+      $project:{
+        category : "$_id",
+        count : 1,
+        image :1
+      }
+    }
+  ])
+  res.status(200).json({
+    success:true,
+    data:{
+      categories
+    }
+  })
+})
+
+
+export const getProduct = asyncHandler(async (req, res, next) => {
+  const product = await Product.find({ _id: req.params.productId }).populate("reviews");
   res.status(200).json({
     success: true,
-    product
+    product,
   });
 });
 
-export const updateProduct = asyncHandler(async(req, res, next) => {
+export const updateProduct = asyncHandler(async (req, res, next) => {
+  // handle to update images also
 
-  const updatedProduct = await Product.findByIdAndUpdate(req.params.productId,req.body,{new:true});  
+  const updatedProduct = await Product.findByIdAndUpdate(
+    req.params.productId,
+    req.body,
+    { new: true }
+  );
   res.status(200).json({
     success: true,
-    updatedProduct
+    updatedProduct,
   });
 });
 
 export const postProduct = asyncHandler(async (req, res, next) => {
-  let allImagePaths;
+  let coverImageName;
+  let coverImage;
+  let imagesURL;
 
   //taking out path of files from req.files
-  allImagePaths = Object.keys(req.files).flatMap((key) =>
-    req.files[key].map((file) => file.path)
-  );
-  console.log(req.files);
+  if (req.files) {
+    const allImagePaths = Object.keys(req.files).flatMap((key) =>
+      req.files[key].map((file) => file.path)
+    );
+    // taking out coverImage name
+    coverImageName = req.files?.coverImage[0]?.filename.split(".")[0];
+    //upload multiple files to cloudinary
+    const uploads = await uploadMultipleOnCloudinary(allImagePaths);
 
-  // taking out coverImage name
-  const coverImageName = req.files?.coverImage[0]?.filename.split(".")[0];
-  //upload multiple files to cloudinary
-  const uploads = await uploadMultipleOnCloudinary(allImagePaths);
+    // comparing coverimage name to filename and getting coverImage URL
+    coverImage = uploads?.find(
+      (upload) => upload.original_filename === coverImageName
+    ).url;
 
-  // comparing coverimage name to filename and getting coverImage URL
-  const coverImageURL = uploads.find(
-    (upload) => upload.original_filename === coverImageName
-  ).url;
-
-  // getting other images URL
-  const imagesURL = uploads
-    .filter((upload) => upload.original_filename !== coverImageName)
-    .map((upload) => ({ url: upload.url }));
+    // getting other images URL
+    imagesURL = uploads
+      ?.filter((upload) => upload.original_filename !== coverImageName)
+      .map((upload) => ({ url: upload.url }));
+  }
 
   const productData = {
-    title: req.body.title,
-    description: req.body.description,
-    original_price: req.body.originalPrice,
-    sale_price: req.body.salePrice || "",
-    seller: req.body.seller,
-    brand: req.body.brand,
-    category: req.body.category,
-    quantity: req.body.quantity,
-    coverImage: coverImageURL,
-    images: imagesURL,
+    title: req.body.title || "",
+    description: req.body.description || "",
+    original_price: req.body.original_price || 0,
+    sale_price: req.body.sale_price || 0,
+    seller: req.body.seller || "",
+    brand: req.body.brand || "",
+    category: req.body.category || "",
+    quantity: req.body.quantity || 0,
+    coverImage: coverImage || "",
+    images: imagesURL || [],
     highlights: req.body.highlights || [], //[""]
     specifications: req.body.specifications || [], //[{title: , description:}]
     color: req.body.color || "",
@@ -90,8 +214,8 @@ export const postProduct = asyncHandler(async (req, res, next) => {
     },
   });
 });
-export const deleteProduct = asyncHandler(async(req, res, next) => {
-  await Product.findByIdAndDelete(req.params.productId);
+export const deleteProduct = asyncHandler(async (req, res, next) => {
+  await Product.findOneAndDelete({ _id: req.params.productId });
   res.status(200).json({
     success: true,
     message: "Product deleted successfully!",
@@ -100,7 +224,7 @@ export const deleteProduct = asyncHandler(async(req, res, next) => {
 
 /*
   req.files = {
-    avatar :[
+    cover :[
       {
         path: ....
       }
