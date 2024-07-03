@@ -33,9 +33,9 @@ function LoginForm() {
       router.back();
     }catch(error){
       console.log(error);
-      // setError("invalid",{
-      //   message:error.response.data.message
-      // })
+      setError("invalid",{
+        message:error.response.data.message
+      })
     }
   }
   return (
