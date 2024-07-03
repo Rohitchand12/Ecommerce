@@ -16,10 +16,15 @@ async function fetchProducts(query) {
   const filter = finalFilter || "ratingsAverage[gte]=0";
   try {
     const response = await fetch(
-      `http://localhost:3000/api/v1/products?${filter}&sort=${sort}&page=${page}&limit=${limit}`
+      `https://mystickart.onrender.com/api/v1/products?${filter}&sort=${sort}&page=${page}&limit=${limit}`
     ,{
       cache:"no-cache"
     });
+    // const response = await fetch(
+    //   `http://localhost:3000/api/v1/products?${filter}&sort=${sort}&page=${page}&limit=${limit}`
+    // ,{
+    //   cache:"no-cache"
+    // });
     if (!response.ok) {
       throw new Error("unable to fetch all products");
     }

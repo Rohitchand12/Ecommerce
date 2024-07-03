@@ -1,5 +1,6 @@
 async function fetchProduct(productId){
-   const response = await fetch(`http://localhost:3000/api/v1/products/${productId}`,{cache:"no-cache"});
+   const response = await fetch(`https://mystickart.onrender.com/api/v1/products/${productId}`,{cache:"no-cache"});
+   // const response = await fetch(`http://localhost:3000/api/v1/products/${productId}`,{cache:"no-cache"});
    if(!response.ok){
     const errorRes = await response.json();
     throw new Error(errorRes.message);

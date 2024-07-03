@@ -32,9 +32,10 @@ function LoginForm() {
       setUser(userData);
       router.back();
     }catch(error){
-      setError("invalid",{
-        message:error.response.data.message
-      })
+      console.log(error);
+      // setError("invalid",{
+      //   message:error.response.data.message
+      // })
     }
   }
   return (

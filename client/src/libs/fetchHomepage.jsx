@@ -2,9 +2,13 @@
 async function fetchHomepage() {
   try{
     const response = await fetch(
-      "http://localhost:3000/api/v1/products/homepage",
+      "https://mystickart.onrender.com/api/v1/products/homepage",
       {cache:"no-cache"}
     );
+    // const response = await fetch(
+    //   "http://localhost:3000/api/v1/products/homepage",
+    //   {cache:"no-cache"}
+    // );
 
     if(!response.ok){
       throw new Error("Unable to fetch data");

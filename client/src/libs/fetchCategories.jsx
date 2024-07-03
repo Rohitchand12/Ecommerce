@@ -2,7 +2,8 @@
 async function fetchCategories() {
  
     try{
-        const response = await fetch("http://localhost:3000/api/v1/products/categories");
+        // const response = await fetch("http://localhost:3000/api/v1/products/categories");
+        const response = await fetch("https://mystickart.onrender.com/api/v1/products/categories");
         if(!response.ok){
             throw new Error("unable to fetch categories");
         }
