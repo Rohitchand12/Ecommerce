@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 function Protect(ProtectedComponent) {
+  const user = useUserStore(state=>state.user);
   return (props)=>{
-    const user = useUserStore(state=>state.user);
     const router = useRouter();
     useLayoutEffect(()=>{
         if(user){

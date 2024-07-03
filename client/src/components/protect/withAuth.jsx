@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 import Propagate from "../loaders/Propagate";
 
 function Protect(ProtectedComponent) {
+  const user = useUserStore(state=>state.user);
   return (props)=>{
-    const user = useUserStore(state=>state.user);
     useEffect(()=>{
         if(!user){
             redirect("/login");
