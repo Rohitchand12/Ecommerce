@@ -130,6 +130,7 @@ function Filter({categories}) {
                       <p className="center">
                         {rating}{" "}
                         <Image
+                          alt="rating"
                           src={star}
                           sizes="50%"
                           className="h-[10px] w-[10px] mx-2"

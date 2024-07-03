@@ -54,6 +54,7 @@ function CatCarousel() {
               className={`absolute  inset-0 h-full w-full bg-ylighter transition-all duration-1000 ease-in-out ${current === index ? " opacity-100" : " opacity-0"}`}
             >
               <Image
+                alt="slide image"
                 src={slide.image}
                 fill={true}
                 className="object-cover "
