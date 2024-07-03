@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 function Protect(ProtectedComponent) {
-  return function WrapopedComponent(props){
+  return (props)=>{
     const user = useUserStore(state=>state.user);
     const router = useRouter();
     useLayoutEffect(()=>{
