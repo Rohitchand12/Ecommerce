@@ -17,6 +17,7 @@ import cookieParser from "cookie-parser";
 import path from "path"
 import cors from "cors";
 import { fileURLToPath } from 'url';
+import morgan from "morgan";
 
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
@@ -25,7 +26,14 @@ const __dirname = path.dirname(__filename); // get the name of the directory
 
 //instantiating app
 const app = express();
-app.use(cors());
+app.use(cookieParser());
+if(process.env.NODE_ENV === "development"){
+    app.use(morgan("dev"));
+}
+app.use(cors({
+    origin:"http://localhost:3001",
+    credentials:true
+}));
 app.use(express.static('/public'));
 app.set("view engine","ejs");
 
@@ -33,7 +41,6 @@ app.set("view engine","ejs");
 //GLOBAL MIDDLEWARES
 
 // app.use(express.json({limit:'10kb'})) can be used to limit body data
-app.use(cookieParser());
 app.use(express.json()); //parsing data from body
 app.use(helmet()) // security http headers
 
@@ -68,6 +75,7 @@ app.use("/api/v1/shipments",shipRouter);
 app.use("/api/v1/payments",paymentRouter);
 app.use("/api/v1/categories",categoryRouter);
 app.get("/",(req,res)=>{
+    console.log(req.cookies);
     res.render(path.join(__dirname,"views/resetPassword.ejs"),{
         name:"Rohit Chand"
     });
