@@ -121,8 +121,9 @@ function Filter({categories}) {
               {/*drop down*/}
               {dropDown.ratings && (
                 <div className="w-full py-5 center flex-col bg-gray-100">
-                  {[1, 2, 3, 4].map((rating) => (
+                  {[1, 2, 3, 4].map((rating,index) => (
                     <div
+                      key={index}
                       onClick={() => handleRatingsFilter(rating)}
                       className="center h-10 w-full cursor-pointer hover:bg-gray-200"
                     >

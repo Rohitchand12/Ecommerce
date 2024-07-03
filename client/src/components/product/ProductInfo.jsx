@@ -7,8 +7,8 @@ function ProductInfo({ product }) {
         {/* product highlights */}
         <h1 className="text-xl font-semibold">Product highlights</h1>
         <ul className="list-disc list-inside">
-          {product?.highlights.map((spec) => (
-            <li>{spec}</li>
+          {product?.highlights.map((spec,index) => (
+            <li key={index}>{spec}</li>
           ))}
         </ul>
       </div>
@@ -17,8 +17,8 @@ function ProductInfo({ product }) {
       <div className="center flex-col w-full">
         <h1 className="text-xl font-semibold mb-4">Specifications</h1>
         <table className="w-full">
-          {product?.specifications.map((spec) => (
-            <tr className="odd:bg-ylight">
+          {product?.specifications.map((spec,index) => (
+            <tr key={index} className="odd:bg-ylight">
               <th className="p-2 text-left">
                 {spec.title}
               </th>
