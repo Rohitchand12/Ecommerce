@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import Propagate from "../loaders/Propagate";
 
 function Protect(ProtectedComponent) {
-  return (props)=>{
+  return function WrappedComponent(props){
     const user = useUserStore(state=>state.user);
     useEffect(()=>{
         if(!user){
