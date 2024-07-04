@@ -28,7 +28,7 @@ const sendJWTResponse = (user, statusCode, res) => {
     ),
     domain:".mystickart.online",
     httpOnly: true,
-    secure : process.env.NODE_ENV === "production ",
+    secure : true,
     sameSite:'none'
   };
 
