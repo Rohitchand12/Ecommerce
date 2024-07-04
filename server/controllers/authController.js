@@ -28,7 +28,6 @@ const sendJWTResponse = (user, statusCode, res) => {
     ),
     domain:`${process.env.NODE_ENV === 'production '? ".mystickart.online":""}`,
     httpOnly: true,
-    secure : process.env.NODE_ENV === 'production ',
     sameSite: "none"
   };
   console.log(cookieOptions);
