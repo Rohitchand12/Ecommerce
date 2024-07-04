@@ -26,12 +26,12 @@ const sendJWTResponse = (user, statusCode, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
-    domain:".mystickart.online",
+    domain:`${process.env.NODE_ENV === 'production '? ".mystickart.online":""}`,
     httpOnly: true,
-    secure : true,
-    sameSite:'none'
+    secure : process.env.NODE_ENV === 'production ',
+    sameSite: "none"
   };
-
+  console.log(cookieOptions);
   if (process.env.NODE_ENV === "production ") cookieOptions.secure = true;
 
   user.password = undefined; //so that password is not visible in response , note we're not saving user
