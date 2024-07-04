@@ -105,6 +105,8 @@ export const logout = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("jwt", {
       httpOnly: true,
+      domain:`${process.env.NODE_ENV === "production" ? ".mystickart.online" :""}`,
+      path:"/"
     })
     .json({
       success: true,
