@@ -84,7 +84,7 @@ app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.get("/", (req, res) => {
   console.log(req.cookies);
-  console.log(process.env.NODE_ENV);
+  console.log(process.env.NODE_ENV === 'production');
   res.render(path.join(__dirname, "views/resetPassword.ejs"), {
     name: "Rohit Chand",
   });
