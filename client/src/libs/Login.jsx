@@ -3,7 +3,7 @@ import axios from "axios";
 async function Login(credentials) {
   try {
     const response = await axios.post(
-      "https://mystickart.onrender.com/api/v1/auth/login",
+      "https://api.mystickart.online/api/v1/auth/login",
       credentials,
       { withCredentials: true }
     );

@@ -16,7 +16,7 @@ async function fetchProducts(query) {
   const filter = finalFilter || "ratingsAverage[gte]=0";
   try {
     const response = await fetch(
-      `https://mystickart.onrender.com/api/v1/products?${filter}&sort=${sort}&page=${page}&limit=${limit}`
+      `https://api.mystickart.online/api/v1/products?${filter}&sort=${sort}&page=${page}&limit=${limit}`
     ,{
       cache:"no-cache"
     });

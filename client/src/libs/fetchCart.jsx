@@ -1,10 +1,19 @@
 import axios from "axios";
 
 async function fetchCart() {
-  // const response = await axios.get("http://localhost:3000/api/v1/cart",{withCredentials:true});
-  const response = await axios.get("https://mystickart.onrender.com/api/v1/cart",{withCredentials:true});
-  console.log(response);
-  return response.data;
+  try {
+    const response = await axios.get("https://api.mystickart.online/api/v1/cart", {
+      withCredentials: true,
+    });
+    // const response = await axios.get("https://mystickart.onrender.com/api/v1/cart",{withCredentials:true});
+    console.log("response from fetch -> ",response);
+    if (!response.ok) {
+      throw new Error();
+    }
+    return response.data;
+  } catch (error) {
+    console.log("error is ---->",error);
+  }
 }
 
 export default fetchCart;

@@ -2,7 +2,7 @@
 async function fetchHomepage() {
   try{
     const response = await fetch(
-      "https://mystickart.onrender.com/api/v1/products/homepage",
+      "https://api.mystickart.online/api/v1/products/homepage",
       {cache:"no-cache"}
     );
     // const response = await fetch(
