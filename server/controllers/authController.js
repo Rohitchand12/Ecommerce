@@ -26,6 +26,7 @@ const sendJWTResponse = (user, statusCode, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
+    domain:".mystickart.online",
     httpOnly: true,
     secure : process.env.NODE_ENV === "production ",
     sameSite:'none'
