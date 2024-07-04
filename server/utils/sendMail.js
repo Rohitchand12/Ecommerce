@@ -17,7 +17,7 @@ export class Email {
 
   newTransport() {
     console.log(process.env.NODE_ENV);
-    if (process.env.NODE_ENV == "production ") {
+    if (process.env.NODE_ENV == "production") {
       console.log("creating a transport in production")
       return nodemailer.createTransport({
         host: process.env.PROD_EMAIL_HOST,
