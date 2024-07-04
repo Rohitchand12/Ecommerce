@@ -1,7 +1,7 @@
-import { Router } from "express";
+import express from "express";
 import { addToCart, getAllCarts, getCart } from "../controllers/cartControllers.js";
 import { protect } from "../middlewares/authMiddleware/protect.js";
-const cartRouter = Router();
+const cartRouter = express.Router();
 
 cartRouter.route('/').get(protect,getCart).post(protect,addToCart);
 

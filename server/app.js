@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:3001","mystickart-baeqs0a9q-rohit-chands-projects-9662787f.vercel.app"];
+const allowedOrigins = ["http://localhost:3000", "http://localhost:3001","https://mystickart.vercel.app"];
 app.use(
   cors({
     origin: (origin, callback) => {
