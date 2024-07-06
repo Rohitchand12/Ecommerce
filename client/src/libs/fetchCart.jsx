@@ -2,7 +2,7 @@
 async function fetchCart() {
   try {
     const response = await fetch("https://api.mystickart.online/api/v1/cart", {
-      method:'POST',
+      method:'GET',
       credentials: "include",
       cache:"no-cache"
     });
