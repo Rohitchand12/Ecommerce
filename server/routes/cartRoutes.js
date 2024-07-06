@@ -3,6 +3,7 @@ import { addToCart, getAllCarts, getCart } from "../controllers/cartControllers.
 import { protect } from "../middlewares/authMiddleware/protect.js";
 const cartRouter = express.Router();
 
-cartRouter.route('/').get(protect,getCart).post(protect,addToCart);
+cartRouter.route('/').post(protect,getCart)
+// .post(protect,addToCart);
 
 export default cartRouter;
