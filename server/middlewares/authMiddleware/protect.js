@@ -7,7 +7,6 @@ import asyncHandler from "../../utils/asyncHandler.js";
 export const protect = asyncHandler(async (req, res, next) => {
   console.log("inside protect middleware")
   console.log(req.cookies);
-  console.log(req);
   // 1) get the token
   let token;
   if (
