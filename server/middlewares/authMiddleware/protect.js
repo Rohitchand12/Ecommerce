@@ -21,8 +21,7 @@ export const protect = asyncHandler(async (req, res, next) => {
   }
   if (!token) {
     return next(
-      new AppError("You are not logged in , please login to access resources"),
-      401
+      new AppError("You are not logged in , please login to access resources",401)
     );
   }
   // 2) Verify token
