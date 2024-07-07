@@ -1,5 +1,10 @@
 async function fetchProduct(productId){
-   const response = await fetch(`https://api.mystickart.online/api/v1/products/${productId}`,{cache:"no-cache"});
+   console.log(process.env.NEXT_PUBLIC_NODE_ENV);
+   let baseURL = process.env.NEXT_PUBLIC_PRODUCTION_BASE_URL;
+    if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
+      baseURL = process.env.NEXT_PUBLIC_DEV_BASE_URL;
+    }
+   const response = await fetch(`${baseURL}/products/${productId}`,{cache:"no-cache"});
    // const response = await fetch(`http://localhost:3000/api/v1/products/${productId}`,{cache:"no-cache"});
    if(!response.ok){
     const errorRes = await response.json();

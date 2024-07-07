@@ -1,8 +1,12 @@
 
 async function fetchHomepage() {
   try{
+    let baseURL = process.env.NEXT_PUBLIC_PRODUCTION_BASE_URL;
+    if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
+      baseURL = process.env.NEXT_PUBLIC_DEV_BASE_URL;
+    }
     const response = await fetch(
-      "https://api.mystickart.online/api/v1/products/homepage",
+      `${baseURL}/products/homepage`,
       {cache:"no-cache"}
     );
     // const response = await fetch(

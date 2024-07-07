@@ -1,12 +1,15 @@
 
 async function fetchCart() {
   try {
-    const response = await fetch("https://api.mystickart.online/api/v1/cart", {
+    let baseURL = process.env.NEXT_PUBLIC_PRODUCTION_BASE_URL;
+    if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
+      baseURL = process.env.NEXT_PUBLIC_DEV_BASE_URL;
+    }
+    const response = await fetch(`${baseURL}/cart`, {
       method:'GET',
       credentials: "include",
       cache:"no-cache"
     });
-    // const response = await axios.get("https://mystickart.onrender.com/api/v1/cart",{withCredentials:true});
     if (!response.ok) {
       const err = await response.json();
       console.log(err);

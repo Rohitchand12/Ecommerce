@@ -1,4 +1,8 @@
 async function fetchProducts(query) {
+  let baseURL = process.env.NEXT_PUBLIC_PRODUCTION_BASE_URL;
+    if(process.env.NEXT_PUBLIC_NODE_ENV === "development"){
+      baseURL = process.env.NEXT_PUBLIC_DEV_BASE_URL;
+    }
   const sort = query.sort || "sale_price";
   const page = query.page || "1";
   const limit = query.limit || "10";
@@ -16,7 +20,7 @@ async function fetchProducts(query) {
   const filter = finalFilter || "ratingsAverage[gte]=0";
   try {
     const response = await fetch(
-      `https://api.mystickart.online/api/v1/products?${filter}&sort=${sort}&page=${page}&limit=${limit}`
+      `${baseURL}/products?${filter}&sort=${sort}&page=${page}&limit=${limit}`
     ,{
       cache:"no-cache"
     });
