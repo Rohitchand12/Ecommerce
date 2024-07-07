@@ -49,7 +49,7 @@ function UserStatus() {
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
-            className="h-[50vh] w-[20vw] bg-white absolute top-16 right-32 z-10 center flex-col gap-4"
+            className="h-[60vh] w-[70vw] md:h-[50vh] md:w-[20vw] bg-white absolute top-16 right-10 md:right-32 z-10 center flex-col gap-4"
           >
             <div className="relative h-28 w-28 rounded-full overflow-hidden">
               {user?.avatar ? (
