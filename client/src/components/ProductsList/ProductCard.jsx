@@ -1,9 +1,30 @@
+"use client"
 import ButtonFilled from "@/ui/ButtonFilled";
 import Image from "next/image";
 import star from "../../../public/star.png";
 import Link from "next/link";
+import addToCart from "@/libs/addToCart";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 function ProductCard({ product }) {
+  const [isAdding , setIsAdding] = useState(false);
+  async function handleAddToCart(){
+    setIsAdding(true);
+    try{
+      await addToCart({
+        item:{
+          product: product._id,
+          quantity: 1,
+        }
+      })
+      toast.success("Added to cart!")
+    }catch(e){
+      console.log(e);
+    }finally{
+      setIsAdding(false);
+    }
+  }
   return (
     <div className="h-full col-span-6 md:col-span-4 lg:col-span-3 text-xs shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
       <Link href={`products/${product._id}`} className="center flex-col gap-8 ">
@@ -39,7 +60,14 @@ function ProductCard({ product }) {
         </div>
       </Link>
       <div className="w-full center">
-        <ButtonFilled className="w-full">Add to cart</ButtonFilled>
+        <ButtonFilled
+         loading={isAdding}
+         disabled={isAdding}
+          className={`w-full disabled:bg-ylight`}
+          onClick={handleAddToCart}
+        >
+          Add to cart
+        </ButtonFilled>
       </div>
     </div>
   );

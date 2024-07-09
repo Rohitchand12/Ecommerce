@@ -15,7 +15,7 @@ function Navbar() {
       <div className="md:hidden flex justify-between h-full w-full items-center px-2">
         <Link href="/" className="center gap-2">
           <Image src={brand} alt="Brand image" height={32} width={50} />
-          <h1 className="xl tracking-wide font-bold">MYSTIC</h1>
+          <h1 className="text-xl tracking-wide font-bold">MYSTIC</h1>
         </Link>
         <div className="center gap-2">
           <UserStatus/>
@@ -29,7 +29,7 @@ function Navbar() {
         <div className="col-span-2 center">
           <Link href="/" className="center gap-2">
             <Image src={brand} alt="Brand image" height={32} width={50} />
-            <h1 className="2xl tracking-wide font-bold">MYSTIC</h1>
+            <h1 className="text-xl tracking-wide font-bold">MYSTIC</h1>
           </Link>
         </div>
 

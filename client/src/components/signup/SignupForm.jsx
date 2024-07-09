@@ -6,6 +6,7 @@ import axios from "axios";
 import { useUserStore } from "@/store/store";
 import { useRouter } from "next/navigation";
 import Signup from "@/libs/Signup";
+import toast from "react-hot-toast";
 function SignupForm() {
   const setUser = useUserStore((state) => state.setUser);
   const user = useUserStore((state) => state.user);
@@ -20,10 +21,18 @@ function SignupForm() {
     console.log(data);
     const formdata = { ...data };
     formdata.avatar = data.avatar[0];
-    const userData = await Signup(formdata);
-    console.log(userData);
-    setUser(userData);
-    router.back();
+    try{
+      const userData = await Signup(formdata);
+      console.log(userData);
+      setUser(userData);
+      router.back();
+    }catch(error){
+      if(error.response && error.response.data){
+        toast.error(error.response.data.message);
+      }else{
+        toast.error("An unexpected error occured !")
+      }
+    }
   }
   return (
     <form className = "center flex-col w-[80%]" onSubmit={handleSubmit(submitHandler)}>

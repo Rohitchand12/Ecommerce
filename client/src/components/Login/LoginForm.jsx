@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 function LoginForm() {
   const setUser = useUserStore((state) => state.setUser);
@@ -30,6 +31,7 @@ function LoginForm() {
       const userData = await Login(data);
       if(!userData) return ;
       setUser(userData);
+      toast.success("Logged in successfuly !");
       router.back();
     }catch(error){
       console.log(error);

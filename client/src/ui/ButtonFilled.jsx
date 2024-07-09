@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import { BeatLoader } from 'react-spinners';
 function ButtonFilled({children,loading, className, ...props}) {

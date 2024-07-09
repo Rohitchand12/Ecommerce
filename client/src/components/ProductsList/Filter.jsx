@@ -47,7 +47,7 @@ function Filter({categories}) {
   }
   return (
     <section
-      className={`fixed top-16 left-0 z-10 font-sans text-xs md:text-sm h-12 w-full bg-ylighter`}
+      className={`sticky top-16 left-0 z-10 font-sans text-xs md:text-sm h-12 w-full bg-ylighter`}
     >
       <div className="h-full w-full grid grid-cols-12 place-content-center place-items-center">
         {/* left  */}

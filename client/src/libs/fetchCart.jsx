@@ -8,21 +8,16 @@ async function fetchCart() {
     const response = await fetch(`${baseURL}/cart`, {
       method:'GET',
       credentials: "include",
-      cache:"no-cache"
+      cache:"no-cache",
     });
     if (!response.ok) {
       const err = await response.json();
       console.log(err);
       throw new Error(err);
     }
-
-    // console.log("response from axios -> ",response.data);
-    // return response.data;
-    const data = await response.json();
-    console.log("response from fetch -> ",data);
-    
+    return await response.json();
   } catch (error) {
-    // console.log("error is ---->",error);
+    console.log("error is ---->",error);
   }
 }
 
