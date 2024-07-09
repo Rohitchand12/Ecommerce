@@ -32,6 +32,7 @@ export const getCart = asyncHandler(async (req, res) => {
 });
 
 export const addToCart = asyncHandler(async (req, res) => {
+  const {item,quantity} = req.body;
   const cartExists = await Cart.findOne({ user: req.user._id });
   let cartInfo;
   if (cartExists){
@@ -44,7 +45,7 @@ export const addToCart = asyncHandler(async (req, res) => {
     cartInfo = await Cart.create({
       user: req.user._id,
       items: [item],
-      quantity,
+      quantity : quantity || 1,
     });
   }
   res.status(200).json({
