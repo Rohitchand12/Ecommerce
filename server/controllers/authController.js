@@ -4,7 +4,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/appError.js";
 import sendEmail from "../utils/sendMail.js";
 import { createHash } from "crypto";
-import {uploadSingleOnCloudinary} from "../utils/cloudinary.js";
+import { uploadSingleOnCloudinary } from "../utils/cloudinary.js";
 import { Email } from "../utils/sendMail.js";
 
 const generateToken = (payload) => {
@@ -27,9 +27,8 @@ const sendJWTResponse = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    path:'/'
+    path: "/",
   };
-  console.log(cookieOptions);
   if (process.env.NODE_ENV === "production") {
     cookieOptions.domain = ".mystickart.online";
     cookieOptions.secure = true;
@@ -38,6 +37,13 @@ const sendJWTResponse = (user, statusCode, res) => {
   user.password = undefined; //so that password is not visible in response , note we're not saving user
 
   res.cookie("jwt", token, cookieOptions);
+  res.cookie("isAuth", true, {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: false,
+    path: "/",
+  });
   res.status(statusCode).json({
     success: true,
     token,
@@ -75,8 +81,9 @@ export const signup = asyncHandler(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     avatar: avatar?.url || "",
   });
-  const url = "https://github.com/Rohitchand12/Ecommerce/tree/main/server/controllers";
-  await new Email(newUser,url).sendWelcome();
+  const url =
+    "https://github.com/Rohitchand12/Ecommerce/tree/main/server/controllers";
+  await new Email(newUser, url).sendWelcome();
 
   sendJWTResponse(newUser, 200, res);
 });
@@ -106,9 +113,12 @@ export const logout = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("jwt", {
       httpOnly: true,
-      domain:`${process.env.NODE_ENV === "production" ? ".mystickart.online" :""}`,
-      path:"/"
+      domain: `${
+        process.env.NODE_ENV === "production" ? ".mystickart.online" : ""
+      }`,
+      path: "/",
     })
+    .clearCookie("isAuth")
     .json({
       success: true,
       message: "user logged out successfully",
@@ -135,7 +145,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 
   try {
     const url = "#";
-    await new Email(user,url).sendResetPasswordLink();
+    await new Email(user, url).sendResetPasswordLink();
     // await sendEmail({
     //   email: user.email,
     //   subject: "Your password reset token (valid 10 min)",
@@ -184,12 +194,12 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   sendJWTResponse(user, 200, res);
 });
 
-export const getProfile = asyncHandler(async(req,res) => {
-  const user  = req.user;
+export const getProfile = asyncHandler(async (req, res) => {
+  const user = req.user;
   res.status(200).json({
-    success:true,
-    data:{
-      user
-    }
-  })
-})
+    success: true,
+    data: {
+      user,
+    },
+  });
+});

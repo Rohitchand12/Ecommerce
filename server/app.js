@@ -18,9 +18,15 @@ import path from "path";
 import cors from "cors";
 import { fileURLToPath } from "url";
 import morgan from "morgan";
+import Razorpay from "razorpay"
+import asyncHandler from "./utils/asyncHandler.js";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
+export const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_TEST_KEY,
+  key_secret: process.env.RAZORPAY_TEST_SECRET,
+});
 
 //instantiating app
 const app = express();
@@ -51,6 +57,7 @@ app.set("view engine", "ejs");
 
 // app.use(express.json({limit:'10kb'})) can be used to limit body data
 app.use(express.json()); //parsing data from body
+app.use(express.urlencoded({extended: true}));
 app.use(helmet()); // security http headers
 
 const limiter = rateLimit({
@@ -89,6 +96,12 @@ app.get("/", (req, res) => {
     name: "Rohit Chand",
   });
 });
+app.get("/api/v1/getkey",asyncHandler(async(req,res)=>{
+  res.status(200).json({
+    success:true,
+    key:process.env.RAZORPAY_TEST_KEY
+  })
+}))
 
 // handling random routes error
 

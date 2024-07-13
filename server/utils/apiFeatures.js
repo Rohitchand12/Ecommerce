@@ -14,6 +14,14 @@ class APIFeatures {
   
       const excludedParams = ["sort", "limit", "page", "feilds"];
       excludedParams.forEach((param) => delete queryParams[param]);
+
+
+      if (queryParams.search) {
+        const searchRegex = new RegExp(queryParams.search, "i");
+        this.query = this.query.find({ title: { $regex: searchRegex } });
+        delete queryParams.search;
+      }
+
       //first delete unecessary feilds and then make the string
       let queryParamsStr = JSON.stringify(queryParams);
       queryParamsStr = queryParamsStr.replace(

@@ -1,30 +1,27 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-export const paymentSchema = new mongoose.Schema({
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref :'User',
-        required:[true,"Payment must belong to a user"]
+export const paymentSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Payment must belong to a user"],
     },
-    method:{
-        type:String,
-        enum :["debit","UPI","credit"],
-        required:[true,"payment method is required"]
+    razorpay_payment_id: {
+      type: String,
+      required: [true, "Razorpay payment id is required"],
     },
-    transactionId :{
-        type:String,
-        required:[true,"transaction id is required"]
+    razorpay_order_id: {
+      type: String,
+      required: [true, "Razorpay orderid is required"],
     },
-    amount:{
-        type:Number,
-        required:[true,"Payment amount is required"]
+    razorpay_signature: {
+      type: String,
+      required: [true, "Razorpay signature is required"],
     },
-    status:{
-        type:String,
-        enum:["pending","success","failed"],
-        required:[true,"Payment status is required"]
-    }
-},{timestamps:true})
+  },
+  { timestamps: true }
+);
 
-const Payment = mongoose.model("Payment",paymentSchema);
+const Payment = mongoose.model("Payment", paymentSchema);
 export default Payment;

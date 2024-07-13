@@ -8,8 +8,9 @@ export const shippingSchema = new mongoose.Schema(
       required: [true, "Shipping details must belong to a user"],
     },
     address: {
-      street: { type: String, required: true },
+      street: { type: String},
       city: { type: String, required: true },
+      location: { type: String, required: true },
       pinCode: { type: String, required: true },
       country: { type: String, required: true },
     }

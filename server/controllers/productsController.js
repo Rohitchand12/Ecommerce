@@ -3,10 +3,12 @@ import asyncHandler from "../utils/asyncHandler.js";
 import APIFeatures from "../utils/apiFeatures.js";
 import AppError from "../utils/appError.js";
 import { uploadMultipleOnCloudinary } from "../utils/cloudinary.js";
-import { uploadSingleOnCloudinary } from "../utils/cloudinary.js";
 
 export const getAllProducts = asyncHandler(async (req, res, next) => {
   // more about async handler in ../utils/asyncHandler.js
+  const search = req.query.search || "";
+  const totalCountQuery = new APIFeatures(Product.find(), req.query).filter().query;
+  const totalCount = await totalCountQuery.countDocuments();
 
   const features = new APIFeatures(Product.find(), req.query)
     .filter()
@@ -17,6 +19,7 @@ export const getAllProducts = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    totalCount,
     results: products.length,
     data: {
       products,

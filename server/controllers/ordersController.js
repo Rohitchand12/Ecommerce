@@ -10,17 +10,18 @@ export const getOrders = asyncHandler(async(req,res)=>{
     })
 })
 export const createOrder = asyncHandler(async(req,res) => {
-    const orderObj = {
-        customer: req.user._id,
-        products : req.products,
-        payment : req.payment,
-        shipping : req.shipping,
-        status : req.status,
-        totalAmount : req.totalAmount
-    }
-    const order = Order.create(orderObj);
+    const {products,payment,shipping,status,totalAmount} = req.body;
+    console.log(req.body);
+    const newOrder = Order.create({
+        products,
+        payment,
+        shipping,
+        status,
+        totalAmount,
+        customer:req.user._id
+    })
     res.status(200).json({
         success:true,
-        order
+        newOrder
     })
 })
