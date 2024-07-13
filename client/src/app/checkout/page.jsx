@@ -1,5 +1,3 @@
-
-
 import bgimage from "../../../public/gym.jpg";
 import Image from "next/image";
 import brand from "../../../public/brand.svg";
