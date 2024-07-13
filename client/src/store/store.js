@@ -11,3 +11,8 @@ export const useUserStore = create(
     storage:createJSONStorage(()=>localStorage)
   })
 );
+
+export const useAddressStore = create((set)=>({
+  address : null,
+  updateAddress: (address)=>set({address})
+}))

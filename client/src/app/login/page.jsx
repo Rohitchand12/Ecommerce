@@ -1,9 +1,6 @@
-"use client";
-
 import Image from "next/image";
 import women from "../../../public/women.jpg";
 import LoginForm from "@/components/Login/LoginForm";
-import withAuthLogin from "../../components/protect/withAuthLogin";
 
 function Login() {
   return (
@@ -23,4 +20,4 @@ function Login() {
   );
 }
 
-export default withAuthLogin(Login);
+export default Login;

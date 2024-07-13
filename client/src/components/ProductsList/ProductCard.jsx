@@ -6,19 +6,29 @@ import Link from "next/link";
 import addToCart from "@/libs/addToCart";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useUserStore } from "@/store/store";
 
 function ProductCard({ product }) {
+  const user = useUserStore(state=>state.user);
   const [isAdding , setIsAdding] = useState(false);
   async function handleAddToCart(){
+    if(!user){
+      toast.error("Please login to add items to cart.");
+      return;
+    }
     setIsAdding(true);
     try{
-      await addToCart({
+      const response = await addToCart({
         item:{
           product: product._id,
           quantity: 1,
         }
       })
-      toast.success("Added to cart!")
+      if(response.data && response.data.message){
+        toast.success(response.data.message);
+      }else{
+        toast.success("Added to cart!");
+      }
     }catch(e){
       console.log(e);
     }finally{

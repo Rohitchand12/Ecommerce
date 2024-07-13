@@ -3,6 +3,7 @@ import Filter from "@/components/ProductsList/Filter";
 // import fetchCategories from "@/libs/fetchCategories";
 import fetchProducts from "@/libs/fetchProducts";
 import fetchCategories from "@/libs/fetchCategories";
+import Pagination from "@/components/ProductsList/Pagination";
 
 async function Products({ searchParams }) {
   console.log("search params = ", searchParams);
@@ -14,11 +15,13 @@ async function Products({ searchParams }) {
   console.log("categories data = ",categoriesData);
   const allProducts = productsData?.data.products;
   const allCategories = categoriesData?.data.categories;
+  const totalPages = Math.ceil(productsData?.totalCount/10);
 
   return (
-      <main className="h-full w-full">
-        <Filter categories = {allCategories}/>
+      <main className="h-full w-full pb-10">
+        <Filter total = {productsData?.totalCount} categories = {allCategories}/>
         <Catalog products = {allProducts}/>
+        <Pagination totalPages = {totalPages}/>
       </main>
   );
 }

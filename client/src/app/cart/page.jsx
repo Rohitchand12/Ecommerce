@@ -1,12 +1,9 @@
-"use client"
-
 import fetchCart from "@/libs/fetchCart";
 import bgimage from "../../../public/gym.jpg";
 import Image from "next/image";
 import brand from "../../../public/brand.svg";
 import Usercart from "@/components/cart/Usercart";
 import Checkout from "@/components/cart/Checkout";
-import withAuth from "@/components/protect/withAuth";
 async function Cart() {
   const cart = await fetchCart();
   console.log("cart items are -- >", cart);
@@ -28,7 +25,7 @@ async function Cart() {
       </div>
       <section className="grid grid-cols-12 px-4 md:px-10 py-5 gap-5">
         {/* cart */}
-        <Usercart cart = {cart?.data.cart}/>
+        <Usercart cart = {cart.data.cart}/>
         {/* cart subtotal and checkoout */}
         <Checkout total = {cart.data?.cart?.totalPrice || "cart empty"}/>
       </section>
@@ -36,4 +33,4 @@ async function Cart() {
   );
 }
 
-export default withAuth(Cart);
+export default Cart;

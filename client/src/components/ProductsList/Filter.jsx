@@ -13,7 +13,7 @@ import { IoIosArrowUp } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
 import PriceSlider from "./PriceSlider";
 
-function Filter({categories}) {
+function Filter({categories,total}) {
   
   //states
   const [dropDown, setDropDown] = useState({
@@ -62,7 +62,7 @@ function Filter({categories}) {
 
           <div className="hidden md:block h-full w-[1px] bg-gray-400"></div>
 
-          <p className="hidden md:block">Showing 10 out of 20 results</p>
+          <p className="hidden md:block">Showing {total} results</p>
         </div>
         {/* right  */}
         <div className="w-full h-full col-span-8 md:col-span-6 center gap-5">
