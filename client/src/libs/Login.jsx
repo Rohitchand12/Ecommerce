@@ -13,7 +13,7 @@ async function Login(credentials) {
     );
     const data = response.data.data.user;
     return data;
-  } catch (error) {
+  } catch (error) {  
    throw (error)
   }
 }
