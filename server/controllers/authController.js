@@ -121,7 +121,14 @@ export const logout = asyncHandler(async (req, res) => {
       }`,
       path: "/",
     })
-    .clearCookie("isAuth")
+    .clearCookie("isAuth",{
+      domain: `${
+        process.env.NODE_ENV === "production" ? ".mystickart.online" : ""
+      }`,
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+    })
     .json({
       success: true,
       message: "user logged out successfully",
