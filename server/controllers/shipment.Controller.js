@@ -20,3 +20,18 @@ export const createShipment = asyncHandler(async(req,res) => {
         newShipment
     })
 })
+
+export const deleteShipment = asyncHandler(async(req,res)=>{
+    const {shipmentId} = req.body;
+    const shipment = await Shipping.findByIdAndDelete(shipmentId);
+    if(!shipment){
+        return res.status(404).json({
+            success:false,
+            message: "Shipment not found"
+        })
+    }
+    res.status(200).json({
+        success:true,
+        message: "Shipment deleted successfully"
+    })
+})
