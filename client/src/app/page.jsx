@@ -7,8 +7,8 @@ import { Suspense } from "react";
 
 async function Home() {
    const home=  await fetchHomepage();
-  const categories = home.data.homePage[0].categories;
-  const products = home.data.homePage[0].products;
+  const categories = home?.data.homePage[0].categories;
+  const products = home?.data.homePage[0].products;
   return (
       <div className="h-full w-full flex flex-col gap-8 font-sans ">
         <Carousel />
