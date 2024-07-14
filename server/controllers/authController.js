@@ -34,19 +34,23 @@ const sendJWTResponse = (user, statusCode, res) => {
     cookieOptions.secure = true;
     cookieOptions.sameSite = "None";
   }
-  user.password = undefined; //so that password is not visible in response , note we're not saving user
-
-  res.cookie("jwt", token, cookieOptions);
-  res.cookie("isAuth", true, {
+  const cookieOptionsIsAuth = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: false,
-    domain : process.env.NODE_ENV === "production"? ".mystickart.online" : "",
-    secure : process.env.NODE_ENV === "production",
-    sameSite : "None",
     path: "/",
-  });
+  };
+  if (process.env.NODE_ENV === "production") {
+    cookieOptionsIsAuth.domain = ".mystickart.online";
+    cookieOptionsIsAuth.secure = true;
+    cookieOptionsIsAuth.sameSite = "None";
+  }
+
+  user.password = undefined; //so that password is not visible in response , note we're not saving user
+
+  res.cookie("jwt", token, cookieOptions);
+  res.cookie("isAuth", true, cookieOptionsIsAuth);
   res.status(statusCode).json({
     success: true,
     token,
@@ -126,8 +130,6 @@ export const logout = asyncHandler(async (req, res) => {
         process.env.NODE_ENV === "production" ? ".mystickart.online" : ""
       }`,
       path: "/",
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "None",
     })
     .json({
       success: true,
