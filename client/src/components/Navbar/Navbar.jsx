@@ -17,7 +17,7 @@ function Navbar() {
           <Image src={brand} alt="Brand image" height={32} width={50} />
           <h1 className="text-xl tracking-wide font-bold">MYSTIC</h1>
         </Link>
-        <div className="center gap-2">
+        <div className="center gap-8">
           <UserStatus/>
           <Menu />
         </div>

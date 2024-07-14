@@ -36,8 +36,8 @@ function ProductCard({ product }) {
     }
   }
   return (
-    <div className="h-full col-span-6 md:col-span-4 lg:col-span-3 text-xs shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-      <Link href={`products/${product._id}`} className="center flex-col gap-8 ">
+    <div className="flex flex-col h-full col-span-6 md:col-span-4 lg:col-span-3 text-xs shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+      <Link href={`products/${product._id}`} className="center flex-col gap-8">
         <div className="relative h-44 lg:h-64 w-full">
           <Image
             src={product.coverImage}
@@ -69,7 +69,7 @@ function ProductCard({ product }) {
           </div>
         </div>
       </Link>
-      <div className="w-full center">
+      <div className="w-full center mt-auto">
         <ButtonFilled
          loading={isAdding}
          disabled={isAdding}

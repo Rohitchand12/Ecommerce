@@ -36,17 +36,17 @@ function CatCarousel() {
     };
   }, []);
   return (
-    <section className="min-h-[80vh] bg-ylighter grid grid-cols-12">
+    <section className="max-h-[80vh] md:min-h-[80vh] bg-ylighter grid grid-cols-12 grid-rows-12 md:grid-rows-1">
       {/* left section */}
-      <div className="col-span-5 h-full w-full center flex-col">
+      <div className="col-span-12 row-span-5 md:row-span-1 md:col-span-5 h-full w-full center flex-col p-4 md:p-0">
         <div className="w-1/2 flex flex-col gap-2">
           <h1 className="text-4xl font-bold">20+ categories to explore</h1>
           <p>Get all you need, go mystic !</p>
-          <ButtonFilled className="center w-1/2 mt-5">Explore now</ButtonFilled>
+          <ButtonFilled className="center md:w-1/2 mt-5">Explore now</ButtonFilled>
         </div>
       </div>
       {/* right section  */}
-      <div className="w-full h-full border border-gray-300 col-span-7">
+      <div className="w-full h-full border border-gray-300 col-span-12 md:col-span-7 row-span-7 md:row-span-1">
         <div className="relative h-full">
           {slides.map((slide,index) => (
             <div
