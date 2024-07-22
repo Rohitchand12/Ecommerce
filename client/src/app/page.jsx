@@ -4,9 +4,10 @@ import HomeCategories from "@/components/Home/HomeCategories";
 import HomeProducts from "@/components/Home/HomeProducts";
 import CatCarousel from "@/components/Home/CatCarousel";
 import { Suspense } from "react";
+import fetchWithRetry from "@/utils/fetchWithRetry";
 
 async function Home() {
-   const home=  await fetchHomepage();
+   const home=  await fetchWithRetry(fetchHomepage,5);
   const categories = home?.data.homePage[0].categories;
   const products = home?.data.homePage[0].products;
   return (
