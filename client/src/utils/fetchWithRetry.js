@@ -5,7 +5,7 @@ function fetchWithRetry(fetcher,maxRetry){
             fetcher().then((data)=>{
                 resolve(data);
             }).catch((error)=>{
-                if(retries <= maxRetry){
+                if(retries < maxRetry){
                     retries++;
                     caller()
                 }

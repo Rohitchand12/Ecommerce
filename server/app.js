@@ -31,9 +31,7 @@ export const instance = new Razorpay({
 //instantiating app
 const app = express();
 app.use(cookieParser());
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
+app.use(morgan('dev'));
 
 const allowedOrigins = ["http://localhost:3000", "http://localhost:3001","https://www.mystickart.online"];
 app.use(
