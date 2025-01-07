@@ -30,7 +30,7 @@ const sendJWTResponse = (user, statusCode, res) => {
     path: "/",
   };
   if (process.env.NODE_ENV === "production") {
-    // cookieOptions.domain = ".mystickart.online";
+    cookieOptions.domain = ".mystickart.online";
     cookieOptions.secure = true;
     cookieOptions.sameSite = "None";
   }
